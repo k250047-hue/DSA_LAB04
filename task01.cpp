@@ -26,19 +26,25 @@ public:
         head = nullptr;
     }
 
+    Node* locate(Node* cur, int key)
+    {
+        if (cur == nullptr)
+            return nullptr;
+
+        if (cur->val == key)
+            return cur;
+
+        Node* found = locate(cur->nxt, key);
+
+        if (found != nullptr)
+            return found;
+
+        return locate(cur->down, key);
+    }
+
     Node* locate(int key)
     {
-        Node* cur = head;
-
-        while (cur != nullptr)
-        {
-            if (cur->val == key)
-                return cur;
-
-            cur = cur->nxt;
-        }
-
-        return nullptr;
+        return locate(head, key);
     }
 
     void append(int v)
@@ -69,10 +75,12 @@ public:
             src = locate(a);
         }
 
-        if (locate(b) == nullptr)
-            append(b);
+        Node* dest = locate(b);
 
-        src->nxt = locate(b);
+        if (dest == nullptr)
+            dest = new Node(b);
+
+        src->nxt = dest;
     }
 
     void linkChild(int a, int b)
@@ -85,10 +93,12 @@ public:
             src = locate(a);
         }
 
-        if (locate(b) == nullptr)
-            append(b);
+        Node* dest = locate(b);
 
-        src->down = locate(b);
+        if (dest == nullptr)
+            dest = new Node(b);
+
+        src->down = dest;
     }
 
     void flatten()
@@ -106,6 +116,7 @@ public:
                 cur->down = nullptr;
 
                 Node* tail = branch;
+
                 while (tail->nxt != nullptr)
                     tail = tail->nxt;
 
@@ -135,6 +146,7 @@ int main()
     MultiLevelList list;
 
     int a, b, mode;
+
     cout << "Enter Node: ";
 
     for (int i = 0; i < 8; i++)
